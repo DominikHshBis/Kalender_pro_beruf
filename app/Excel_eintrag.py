@@ -11,6 +11,7 @@ for i in range(32,34):
     ws[f"B{i}"] = 0.75                  # Stunden
     ws[f"C{i}"] = "Vorbereitung wie gewünscht"        # Leistung
     ws[f"D{i}"] = 19
+    ws[f"E{i}"] = f"=ROUND(B{i}*$D$32,2)"         # Berechnung der Kosten
                    # Stundensatz
             
 #asd
