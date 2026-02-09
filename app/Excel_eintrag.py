@@ -4,13 +4,14 @@ from openpyxl import load_workbook
 wb = load_workbook("app/Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx")
 ws = wb.active
 
-for i in range(33,34):
+for i in range(32,40):
     
 # Zeile 31 befüllen
     ws[f"A{i}"] = "02/04/2026"          # Datum
     ws[f"B{i}"] = 0.75                  # Stunden
     ws[f"C{i}"] = "Vorbereitung wie gewünscht"        # Leistung
-    ws[f"D{i}"] = 19                    # Stundensatz
+    ws[f"D{i}"] = 19    
+    ws[f"E{i}"] = 0.00                 # Stundensatz
             
 #asd
 # Datei speichernd
