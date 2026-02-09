@@ -10,7 +10,7 @@ for i in range(32,33):
     ws[f"A{i}"] = "02/04/2026"          # Datum
     ws[f"B{i}"] = 0.75                  # Stunden
     ws[f"C{i}"] = "Vorbereitung wie gewünscht"        # Leistung
-    ws[f"D{i}"] = 19    
+    ws[f"D{i}"] = 19
                    # Stundensatz
             
 #asd
