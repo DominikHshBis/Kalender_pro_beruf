@@ -7,6 +7,8 @@ from Excel_eintrag import excel_setter
 
 from openpyxl import load_workbook
 
+First_day = ""
+Last_day = ""
 wb = load_workbook("app/Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx")
 ws = wb.active
 
@@ -54,11 +56,16 @@ else:
         summary = event.get("summary", "(kein Titel)",)
        
         description = event.get("description", "")
+       
+
         if any(tag in summary for tag in TAGS):
-            print(i)
+            
             start_dt = parser.parse(start) 
             end_dt = parser.parse(end) # Datum und Uhrzeit getrennt formatieren
             start_date = start_dt.strftime("%d.%m.%Y") 
+            if i == 32:
+                first_day = start_date
+            Last_day = start_date
             start_time = start_dt.strftime("%H:%M") 
             end_date = end_dt.strftime("%d.%m.%Y") 
             end_time = end_dt.strftime("%H:%M")
@@ -75,3 +82,4 @@ else:
             excel_setter(i,ws, datum=start_date, decimal_hours=decimal_hours, description=description)     
             wb.save(f"Muster_Honorarrechnung-Lehrkräfte_{month}.xlsx")
             i += 1 
+    ws["c24"] = f"{First_day} bis {Last_day}"      
