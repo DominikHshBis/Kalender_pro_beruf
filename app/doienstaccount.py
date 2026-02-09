@@ -55,7 +55,7 @@ else:
        
         description = event.get("description", "")
         if any(tag in summary for tag in TAGS):
-           
+            print(i)
             start_dt = parser.parse(start) 
             end_dt = parser.parse(end) # Datum und Uhrzeit getrennt formatieren
             start_date = start_dt.strftime("%Y-%m-%d") 
