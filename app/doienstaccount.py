@@ -58,9 +58,9 @@ else:
             print(i)
             start_dt = parser.parse(start) 
             end_dt = parser.parse(end) # Datum und Uhrzeit getrennt formatieren
-            start_date = start_dt.strftime("%Y-%m-%d") 
+            start_date = start_dt.strftime("%d.%m.%Y") 
             start_time = start_dt.strftime("%H:%M") 
-            end_date = end_dt.strftime("%Y-%m-%d") 
+            end_date = end_dt.strftime("%d.%m.%Y") 
             end_time = end_dt.strftime("%H:%M")
 
             dif =  end_dt - start_dt
@@ -68,9 +68,10 @@ else:
             total_minutes = int(dif.total_seconds() // 60) 
             hours = total_minutes // 60 
             minutes = total_minutes % 60
+            month = datetime.now().strftime("%B")
             #print(f"{decimal_hours} Stunden")
           #  print(i)
             #print(summary, start_date, end_date,start_time, end_time, dif, f"{decimal_hours} stunden", description)
             excel_setter(i,ws, datum=start_date, decimal_hours=decimal_hours, description=description)     
-            wb.save("Test_Eintrag.xlsx")
+            wb.save(f"Muster_Honorarrechnung-Lehrkräfte_{month}.xlsx")
             i += 1 
