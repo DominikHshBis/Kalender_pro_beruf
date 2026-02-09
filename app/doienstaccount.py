@@ -44,8 +44,9 @@ events = events_result.get("items", [])
 if not events:
     print("Keine Termine in diesem Monat.")
 else:
-    for i, event in enumerate(events,start=32):
-        print(i)
+    i = 32
+    for event in events:
+        
         
         start = event["start"].get("dateTime", event["start"].get("date"))
         end = event["end"].get("dateTime", event["end"].get("date"))
@@ -53,8 +54,8 @@ else:
         summary = event.get("summary", "(kein Titel)",)
        
         description = event.get("description", "")
-        if any(tag in summary for tag in TAGS): 
-                
+        if any(tag in summary for tag in TAGS):
+           
             start_dt = parser.parse(start) 
             end_dt = parser.parse(end) # Datum und Uhrzeit getrennt formatieren
             start_date = start_dt.strftime("%Y-%m-%d") 
@@ -72,3 +73,4 @@ else:
             #print(summary, start_date, end_date,start_time, end_time, dif, f"{decimal_hours} stunden", description)
             excel_setter(i,ws, datum=start_date, decimal_hours=decimal_hours, description=description)     
             wb.save("Test_Eintrag.xlsx")
+            i += 1 

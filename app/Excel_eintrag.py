@@ -4,9 +4,6 @@ from openpyxl import load_workbook
 # Excel-Datei laden
 
 def excel_setter(i,ws, datum, decimal_hours, description):
-    
-    
-        
     # Zeile 31 befüllen
     ws[f"A{i}"] = datum     # Datum
     ws[f"B{i}"] = decimal_hours                # Stunden
