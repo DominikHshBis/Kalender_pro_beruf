@@ -82,4 +82,4 @@ else:
             excel_setter(i,ws, datum=start_date, decimal_hours=decimal_hours, description=description)     
             wb.save(f"Muster_Honorarrechnung-Lehrkräfte_{month}.xlsx")
             i += 1 
-    ws["c24"] = f"{First_day} bist {Last_day}"      
+    ws["C24"] = f"{First_day} bist {Last_day}"      
