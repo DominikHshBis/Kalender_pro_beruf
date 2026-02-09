@@ -10,6 +10,4 @@ Pillow
 
 requests
 
-fastbill-python
-
 python-dotenv
