@@ -1,0 +1,15 @@
+google-api-python-client
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+
+python-dateutil
+
+openpyxl
+Pillow
+
+requests
+
+fastbill-python
+
+python-dotenv
