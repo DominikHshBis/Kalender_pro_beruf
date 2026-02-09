@@ -4,7 +4,7 @@ from openpyxl import load_workbook
 wb = load_workbook("app/Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx")
 ws = wb.active
 
-for i in range(32,40):
+for i in range(32,33):
     
 # Zeile 31 befüllen
     ws[f"A{i}"] = "02/04/2026"          # Datum
