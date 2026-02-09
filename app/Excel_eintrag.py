@@ -13,7 +13,7 @@ for i in range(32,35):
     ws[f"D{i}"] = 19
     ws[f"E{i}"] = f"=ROUND(B{i}*$D$32,2)"         # Berechnung der Kosten
                    # Stundensatz
-            
+            #asdnn
 #asd
 # Datei speichernd
 wb.save("Test_Eintrag.xlsx")
