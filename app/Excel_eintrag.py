@@ -1,10 +1,10 @@
 from openpyxl import load_workbook
 
 # Excel-Datei laden
-wb = load_workbook("app/Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx")
+wb = load_workbook("app/Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx",data_only=False)
 ws = wb.active
 
-for i in range(32,33):
+for i in range(32,34):
     
 # Zeile 31 befüllen
     ws[f"A{i}"] = "02/04/2026"          # Datum
