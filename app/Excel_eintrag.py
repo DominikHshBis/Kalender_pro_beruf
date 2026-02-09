@@ -1,7 +1,7 @@
 from openpyxl import load_workbook
 
 # Excel-Datei laden
-wb = load_workbook("app/Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx",data_only=False)
+wb = load_workbook("app/Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx")
 ws = wb.active
 
 for i in range(32,35):
@@ -11,7 +11,7 @@ for i in range(32,35):
     ws[f"B{i}"] = 0.75                  # Stunden
     ws[f"C{i}"] = "Vorbereitung wie gewünscht"        # Leistung
     ws[f"D{i}"] = 19
-    ws[f"E{i}"] = f"=ROUND(B{i}*$D${i},2)"         # Berechnung der Kosten
+    ws[f"E{i}"] = f"=ROUND(B{i}*$D$32,2)"         # Berechnung der Kosten
                    # Stundensatz
             
 #asd
