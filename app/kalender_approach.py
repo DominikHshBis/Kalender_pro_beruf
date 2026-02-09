@@ -1,11 +1,14 @@
+
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any
 import os
 from pathlib import Path
-
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
+import google_auth_oauthlib
+print("Geladene Bibliothek:", google_auth_oauthlib.__file__)
+
 
 
 class AuthenticationManager:
@@ -19,7 +22,9 @@ class AuthenticationManager:
     def get_credentials(self) -> Credentials:
         """Holt oder erstellt Authentifizierungstoken"""
         if self._token_exists():
-            return self._load_credentials_from_file()
+            creds = self._load_credentials_from_file()
+            if creds:
+                return creds
         return self._create_new_credentials()
     
     def _token_exists(self) -> bool:
@@ -29,24 +34,50 @@ class AuthenticationManager:
     def _load_credentials_from_file(self) -> Credentials:
         """Lädt Credentials aus einer bestehenden Token-Datei"""
         try:
-            return Credentials.from_authorized_user_file(self.token_file, self.scopes)
+            creds = Credentials.from_authorized_user_file(self.token_file, self.scopes)
+            # Refresh-Token wenn nötig
+            if creds.expired and creds.refresh_token:
+                print("Token abgelaufen, refreshe...")
+                from google.auth.transport.requests import Request
+                creds.refresh(Request())
+                self._save_credentials(creds)
+            print("✓ Token erfolgreich geladen!")
+            return creds
         except Exception as e:
-            print(f"Fehler beim Laden der Credentials: {e}")
-            return self._create_new_credentials()
+            print(f"⚠️ Token konnte nicht geladen werden: {e}")
+            return None
     
     def _create_new_credentials(self) -> Credentials:
         """Erstellt neue Credentials durch OAuth2-Flow"""
-        flow = InstalledAppFlow.from_client_secrets_file(
-            self.credentials_file, self.scopes
-        )
-        creds = flow.run_local_server(port=0)
-        self._save_credentials(creds)
-        return creds
+        try:
+            if not Path(self.credentials_file).exists():
+                raise FileNotFoundError(f"credentials.json nicht gefunden: {self.credentials_file}")
+            
+            flow = InstalledAppFlow.from_client_secrets_file(
+                self.credentials_file, self.scopes
+            )
+            print("\n" + "="*60)
+            print("Authentifizierung erforderlich!")
+            print("="*60)
+            creds = flow.run_console()
+            print("✓ Authentifizierung abgeschlossen!")
+            
+            self._save_credentials(creds)
+            print("✓ Token erfolgreich gespeichert!")
+            return creds
+        except Exception as e:
+            print(f"❌ Fehler bei der Authentifizierung: {e}")
+            print(f"Fehlertyp: {type(e).__name__}")
+            raise
     
     def _save_credentials(self, credentials: Credentials) -> None:
         """Speichert die Credentials in eine Datei"""
-        with open(self.token_file, "w") as token_file:
-            token_file.write(credentials.to_json())
+        try:
+            with open(self.token_file, "w") as token_file:
+                token_file.write(credentials.to_json())
+            print(f"Token gespeichert in: {Path(self.token_file).absolute()}")
+        except Exception as e:
+            print(f"Fehler beim Speichern des Tokens: {e}")
 
 
 class CalendarServiceInterface(ABC):
