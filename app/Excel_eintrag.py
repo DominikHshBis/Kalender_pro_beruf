@@ -11,7 +11,7 @@ for i in range(32,40):
     ws[f"B{i}"] = 0.75                  # Stunden
     ws[f"C{i}"] = "Vorbereitung wie gewünscht"        # Leistung
     ws[f"D{i}"] = 19    
-    ws[f"E{i}"] = 0.00                 # Stundensatz
+                   # Stundensatz
             
 #asd
 # Datei speichernd
