@@ -1,19 +1,20 @@
 from openpyxl import load_workbook
 
-# Excel-Datei laden
-wb = load_workbook("app/Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx")
-ws = wb.active
 
-for i in range(32,35):
+# Excel-Datei laden
+
+def excel_setter(i,ws, datum, decimal_hours, description):
     
-# Zeile 31 befüllen
-    ws[f"A{i}"] = "02/04/2026"          # Datum
-    ws[f"B{i}"] = 0.75                  # Stunden
-    ws[f"C{i}"] = "Vorbereitung wie gewünscht"        # Leistung
+    
+        
+    # Zeile 31 befüllen
+    ws[f"A{i}"] = datum     # Datum
+    ws[f"B{i}"] = decimal_hours                # Stunden
+    ws[f"C{i}"] = description        # Leistung
     ws[f"D{i}"] = 19
     ws[f"E{i}"] = f"=ROUND(B{i}*$D$32,2)"  #f"=RUNDEN(B{i}*$D$32;2)"          # Berechnung der Kosten
-                   # Stundensatzf
+    #wb.save("Test_Eintrag.xlsx")           # Stundensatzf
             #asdnn
 #asd
 # Datei speichernd
-wb.save("Test_Eintrag.xlsx")
+

@@ -3,6 +3,12 @@ from googleapiclient.discovery import build
 from datetime import datetime, timedelta
 from dateutil import parser
 import calendar
+from Excel_eintrag import excel_setter
+
+from openpyxl import load_workbook
+
+wb = load_workbook("app/Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx")
+ws = wb.active
 
 TAGS = ["#Pro", "#Vor","#pro", "#vor"]
 SERVICE_ACCOUNT_FILE = "credentials.json"
@@ -38,7 +44,8 @@ events = events_result.get("items", [])
 if not events:
     print("Keine Termine in diesem Monat.")
 else:
-    for event in events:
+    for i, event in enumerate(events,start=32):
+        print(i)
         
         start = event["start"].get("dateTime", event["start"].get("date"))
         end = event["end"].get("dateTime", event["end"].get("date"))
@@ -60,8 +67,8 @@ else:
             total_minutes = int(dif.total_seconds() // 60) 
             hours = total_minutes // 60 
             minutes = total_minutes % 60
-            print(f"{decimal_hours} Stunden")
-
-            print(summary, start_date, end_date,start_time, end_time, dif, f"{decimal_hours} stunden", description)
-      
-#was
+            #print(f"{decimal_hours} Stunden")
+          #  print(i)
+            #print(summary, start_date, end_date,start_time, end_time, dif, f"{decimal_hours} stunden", description)
+            excel_setter(i,ws, datum=start_date, decimal_hours=decimal_hours, description=description)     
+            wb.save("Test_Eintrag.xlsx")
