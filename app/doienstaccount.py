@@ -1,8 +1,10 @@
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from datetime import datetime, timedelta
+from dateutil import parser
 import calendar
 
+TAGS = ["#Pro", "#Vor","#pro", "#vor"]
 SERVICE_ACCOUNT_FILE = "credentials.json"
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
 
@@ -37,7 +39,28 @@ if not events:
     print("Keine Termine in diesem Monat.")
 else:
     for event in events:
+        
         start = event["start"].get("dateTime", event["start"].get("date"))
-        summary = event.get("summary", "(kein Titel)")
-        description=event.get("description", "")
-        print(start, summary, description)
+        end = event["end"].get("dateTime", event["end"].get("date"))
+        
+        summary = event.get("summary", "(kein Titel)",)
+       
+        description = event.get("description", "")
+        if any(tag in summary for tag in TAGS): 
+                
+            start_dt = parser.parse(start) 
+            end_dt = parser.parse(end) # Datum und Uhrzeit getrennt formatieren
+            start_date = start_dt.strftime("%Y-%m-%d") 
+            start_time = start_dt.strftime("%H:%M") 
+            end_date = end_dt.strftime("%Y-%m-%d") 
+            end_time = end_dt.strftime("%H:%M")
+
+            dif =  end_dt - start_dt
+            decimal_hours = dif.total_seconds() / 3600
+            total_minutes = int(dif.total_seconds() // 60) 
+            hours = total_minutes // 60 
+            minutes = total_minutes % 60
+            print(f"{decimal_hours} Stunden")
+
+            print(summary, start_date, end_date,start_time, end_time, dif, f"{decimal_hours} stunden", description)
+      
