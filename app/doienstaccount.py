@@ -1,37 +1,43 @@
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
+from datetime import datetime, timedelta
+import calendar
 
-# Pfad zu deiner JSON-Datei
 SERVICE_ACCOUNT_FILE = "credentials.json"
-
-# Die benötigten Berechtigungen (Scopes)
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
 
-# Dienstkonto authentifizieren
 credentials = service_account.Credentials.from_service_account_file(
     SERVICE_ACCOUNT_FILE, scopes=SCOPES
 )
 
-# Calendar API Client erstellen
 service = build("calendar", "v3", credentials=credentials)
 
-# WICHTIG: Kalender-ID deines Kalenders eintragen
-# (zu finden in Google Kalender → Einstellungen → Kalender integrieren)
 CALENDAR_ID = "dominikballentin@gmail.com"
 
-# Beispiel: Nächste 10 Termine abrufen
+# Aktuellen Monat berechnen
+now = datetime.utcnow()
+first_day = datetime(now.year, now.month, 1)
+last_day = datetime(now.year, now.month, calendar.monthrange(now.year, now.month)[1])
+
+# In RFC3339-Format umwandeln
+time_min = first_day.isoformat() + "Z"
+time_max = (last_day + timedelta(days=1)).isoformat() + "Z"
+
 events_result = service.events().list(
     calendarId=CALENDAR_ID,
-    maxResults=10,
+    timeMin=time_min,
+    timeMax=time_max,
     singleEvents=True,
-    orderBy="startTime"
+    orderBy="startTime",
 ).execute()
 
 events = events_result.get("items", [])
 
 if not events:
-    print("Keine Termine gefunden.")
+    print("Keine Termine in diesem Monat.")
 else:
     for event in events:
         start = event["start"].get("dateTime", event["start"].get("date"))
-        print(start, event["summary"])
+        summary = event.get("summary", "(kein Titel)")
+        description=event.get("description", "")
+        print(start, summary, description)
