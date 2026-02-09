@@ -10,6 +10,6 @@ ws["B31"] = 0.75                  # Stunden
 ws["C31"] = "Vorbereitung"        # Leistung
 ws["D31"] = 19                    # Stundensatz
            
-
+#asd
 # Datei speichern
 wb.save("Test_Eintrag.xlsx")
