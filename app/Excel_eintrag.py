@@ -12,6 +12,7 @@ def excel_setter(i,ws, datum, decimal_hours, description,First_day, Last_day, st
     ws[f"D{i}"] = stundensatz
     ws[f"E{i}"] = f"=ROUND(B{i}*$D$32,2)"  
     ws["C24"] = f"{First_day} bis {Last_day}"
+    ws["E23"] = f"{Last_day}"
 #asd
 # Datei speichernd
 
