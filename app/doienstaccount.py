@@ -92,6 +92,6 @@ else:
           
             excel_setter(i,ws, datum=start_date, decimal_hours=decimal_hours, description=description,First_day=First_day, Last_day=Last_day) 
               
-            wb.save(f"output/Muster_Honorarrechnung-Lehrkräfte_{month}.xlsx")
+            wb.save(f"/output/Muster_Honorarrechnung-Lehrkräfte_{month}.xlsx")
             i += 1 
           

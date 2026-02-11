@@ -1,0 +1,8 @@
+docker load -i image.tar
+
+PS C:\Users\domin\Desktop> docker run -d `
+>>   -v D:\output:/output `
+>>   -v D:\config:/app/config `
+>>   --name kalender `
+>>   app
+
