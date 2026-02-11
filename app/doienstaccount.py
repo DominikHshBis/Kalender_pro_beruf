@@ -80,7 +80,7 @@ else:
             end_date = end_dt.strftime("%d.%m.%Y") 
             end_time = end_dt.strftime("%H:%M")
 
-            #berechnet den letzten die Stundendiferenz
+            #berechnet die Stundendiferenz
             dif =  end_dt - start_dt 
             decimal_hours = dif.total_seconds() / 3600
             total_minutes = int(dif.total_seconds() // 60) 
@@ -89,8 +89,8 @@ else:
             month = datetime.now().strftime("%B")
             #month = datetime(2026,3,1).strftime("%B")
             #print(f"{decimal_hours} Stunden")
-          #  print(i)
-            #print(summary, start_date, end_date,start_time, end_time, dif, f"{decimal_hours} stunden", description)
+          
+          
             excel_setter(i,ws, datum=start_date, decimal_hours=decimal_hours, description=description,First_day=First_day, Last_day=Last_day) 
               
             wb.save(f"Muster_Honorarrechnung-Lehrkräfte_{month}.xlsx")
