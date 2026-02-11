@@ -2,6 +2,6 @@
 "tags": ["#Pro", "#Vor","#pro", "#vor"],
 "scopes": "https://www.googleapis.com/auth/calendar",
 "calendar_id": "dominikballentin@gmail.com",
-"excel_load_path": "app/Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx"
+"excel_load_path": "/app/Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx"
 
 }
