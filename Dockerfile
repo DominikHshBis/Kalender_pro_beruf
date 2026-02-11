@@ -1,15 +1,19 @@
-# 1. Basis-Image: offizielles Python-Image
 FROM python:3.11-slim
 
-# 2. Arbeitsverzeichnis im Container
+# Arbeitsverzeichnis im Container
 WORKDIR /app
 
-# 3. Requirements installieren (falls vorhanden)
+# Systemabhängigkeiten (für google-api-client etc.)
+RUN apt-get update && apt-get install -y \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Requirements zuerst kopieren und installieren
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 4. Restliche Dateien ins Image kopieren
+# Restliche Dateien kopieren
 COPY . .
 
-# 5. Standard-Startbefehl (wird von Cron überschrieben)
+# Standard-Startbefehl (wird durch Cron überschrieben)
 CMD ["python3", "main.py"]
