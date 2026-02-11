@@ -13,7 +13,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Restliche Dateien kopieren
-COPY . .
+COPY app /app/
 
 # Standard-Startbefehl (wird durch Cron überschrieben)
-CMD ["python3", "main.py"]
+CMD ["python3", "doienstaccount.py"]
