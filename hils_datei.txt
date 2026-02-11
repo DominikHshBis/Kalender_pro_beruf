@@ -1,3 +1,6 @@
+docker build -t kalender-app .
+docker save -o kalender-app.tar kalender-app
+
 docker load -i image.tar
 
 PS C:\Users\domin\Desktop> docker run -d `

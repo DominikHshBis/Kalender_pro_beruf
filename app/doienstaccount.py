@@ -24,29 +24,6 @@ EXCEL_LOAD_PATH = find_file("Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx", PR
 OUTPUT_DIR = PROJECT_ROOT / "output"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
-
-
-
-
-
-# Basis: Script liegt in app/
-# PROJECT_ROOT = Path(__file__).parent.parent
-# # Externe Config & Credentials (extern gemounted)
-# CONFIG_DIR = PROJECT_ROOT / "config"
-# CONFIG_PATH = CONFIG_DIR / "config_dominik.json"
-# CONFIG_DIR = PROJECT_ROOT / "config"
-# CONFIG_PATH = CONFIG_DIR / "config_dominik.json"
-# #CONFIG_PATH = Path("/app/config/config_dominik.json")  # Pfad im Container
-# SERVICE_ACCOUNT_FILE = CONFIG_DIR / "credentials.json"
-# # Excel-Datei im selben Ordner wie Script
-# EXCEL_LOAD_PATH = PROJECT_ROOT / "Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx"
-# Output-Ordner extern
-# OUTPUT_DIR = PROJECT_ROOT / "output"
-# OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-#OUTPUT_DIR = Path("/app/output")
-#OUTPUT_DIR.mkdir(exist_ok=True)  # falls im Container leer, wird erstellt
-
-
 # lädt json config
 with open(CONFIG_PATH) as f:
     config = json.load(f)
