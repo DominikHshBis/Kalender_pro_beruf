@@ -2,6 +2,7 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from datetime import datetime, timedelta
 from dateutil import parser
+from zoneinfo import ZoneInfo
 import calendar
 from Excel_eintrag import excel_setter
 import json
@@ -48,14 +49,37 @@ service = build("calendar", "v3", credentials=credentials)
 
 # Aktuellen Monat berechnen
 #now = datetime(2026,4,1) #bt jahr monat und Tag an
-now = datetime.utcnow()
 
-first_day = datetime(now.year, now.month, 1)
-last_day = datetime(now.year, now.month, calendar.monthrange(now.year, now.month)[1])
+BERLIN = ZoneInfo("Europe/Berlin")
+now = datetime.now(BERLIN)
 
-# In RFC3339-Format umwandeln damit die API die Daten verstehen kann
-time_min = first_day.isoformat() + "Z"
-time_max = (last_day + timedelta(days=1)).isoformat() + "Z"
+first_local = datetime(now.year, now.month, 1, 0, 0, 0, tzinfo=BERLIN)
+last_local = datetime(
+    now.year,
+    now.month,
+    calendar.monthrange(now.year, now.month)[1],
+    23, 59, 59,
+    tzinfo=BERLIN
+)
+
+first_utc = first_local.astimezone(ZoneInfo("UTC"))
+last_utc = last_local.astimezone(ZoneInfo("UTC"))
+
+time_min = first_utc.isoformat().replace("+00:00", "Z")
+time_max = last_utc.isoformat().replace("+00:00", "Z")
+
+#offset_hours = datetime.now(ZoneInfo("Europe/Berlin")).utcoffset().total_seconds() / 3600
+
+# now = datetime.utcnow() #- timedelta(hours=offset_hours)
+
+# #now = datetime.utcnow()
+
+# first_day = datetime(now.year, now.month, 1)
+# last_day = datetime(now.year, now.month, calendar.monthrange(now.year, now.month)[1])
+
+# # In RFC3339-Format umwandeln damit die API die Daten verstehen kann
+# time_min = first_day.isoformat() + "Z"
+# time_max = (last_day + timedelta(days=1)).isoformat() + "Z"
 
 events_result = service.events().list(
     calendarId=CALENDAR_ID,
@@ -63,6 +87,7 @@ events_result = service.events().list(
     timeMax=time_max,
     singleEvents=True,
     orderBy="startTime",
+    timeZone = "Europe/Berlin"
 ).execute()
 
 events = events_result.get("items", []) # gibt die Termine zurück, die im aktuellen Monat liegen als Liste von Ereignissen zurück. Jedes Ereignis enthält Informationen wie Start- und Endzeit, Titel, Beschreibung usw.
