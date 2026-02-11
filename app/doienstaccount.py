@@ -4,18 +4,25 @@ from datetime import datetime, timedelta
 from dateutil import parser
 import calendar
 from Excel_eintrag import excel_setter
+import json
 
 from openpyxl import load_workbook
 
+# lädt json config
+with open("config/config_dominik.json","r") as config:
+    config = json.load(config)
+
+#teilt congif inhalt den variablen zu
+CALENDAR_ID = config["calendar_id"]
+TAGS = config["tags"] #list of tags to search for in calendar events
+SERVICE_ACCOUNT_FILE = "config/credentials.json"
+SCOPES = [config["scopes"]] # api adress to access calendar data
+EXCEL_LOAD_PATH = config["excel_load_path"]
+
+wb = load_workbook(EXCEL_LOAD_PATH)
 First_day = ""
 Last_day = ""
-wb = load_workbook("app/Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx")
 ws = wb.active
-CALENDAR_ID = "dominikballentin@gmail.com"
-
-TAGS = ["#Pro", "#Vor","#pro", "#vor"]
-SERVICE_ACCOUNT_FILE = "credentials.json"
-SCOPES = ["https://www.googleapis.com/auth/calendar"]
 
 credentials = service_account.Credentials.from_service_account_file(
     SERVICE_ACCOUNT_FILE, scopes=SCOPES
@@ -23,8 +30,12 @@ credentials = service_account.Credentials.from_service_account_file(
 
 service = build("calendar", "v3", credentials=credentials)
 
+
+
 # Aktuellen Monat berechnen
 now = datetime.utcnow()
+
+# now = datetime(2026,4,1) gibt jahr monat und Tag an
 first_day = datetime(now.year, now.month, 1)
 last_day = datetime(now.year, now.month, calendar.monthrange(now.year, now.month)[1])
 
@@ -47,11 +58,10 @@ if not events:
 else:
     i = 32
     for event in events:
-        
-        #Tag und Uhrzeit des Termins
+           
         start = event["start"].get("dateTime", event["start"].get("date"))
         end = event["end"].get("dateTime", event["end"].get("date"))
-        
+
         summary = event.get("summary", "(kein Titel)",)
        
         description = event.get("description", "")
@@ -78,6 +88,7 @@ else:
             hours = total_minutes // 60 
             minutes = total_minutes % 60
             month = datetime.now().strftime("%B")
+            #month = datetime(2026,3,1).strftime("%B")
             #print(f"{decimal_hours} Stunden")
           #  print(i)
             #print(summary, start_date, end_date,start_time, end_time, dif, f"{decimal_hours} stunden", description)
