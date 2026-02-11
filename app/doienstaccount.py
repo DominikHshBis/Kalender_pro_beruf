@@ -6,17 +6,56 @@ import calendar
 from Excel_eintrag import excel_setter
 import json
 from openpyxl import load_workbook
+from pathlib import Path
+
+from pathlib import Path
+import json
+from openpyxl import load_workbook
+
+def find_file(filename: str, start_dir: Path) -> Path:
+    for path in start_dir.rglob(filename): 
+        return path 
+    raise FileNotFoundError(f"Datei '{filename}' wurde nicht gefunden.")
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent # Config automatisch finden 
+CONFIG_PATH = find_file("config_dominik.json", PROJECT_ROOT) 
+SERVICE_ACCOUNT_FILE = find_file("credentials.json", PROJECT_ROOT) # Excel automatisch finden 
+EXCEL_LOAD_PATH = find_file("Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx", PROJECT_ROOT) # Output-Ordner 
+OUTPUT_DIR = PROJECT_ROOT / "output"
+OUTPUT_DIR.mkdir(exist_ok=True)
+
+
+
+
+
+
+# Basis: Script liegt in app/
+# PROJECT_ROOT = Path(__file__).parent.parent
+# # Externe Config & Credentials (extern gemounted)
+# CONFIG_DIR = PROJECT_ROOT / "config"
+# CONFIG_PATH = CONFIG_DIR / "config_dominik.json"
+# CONFIG_DIR = PROJECT_ROOT / "config"
+# CONFIG_PATH = CONFIG_DIR / "config_dominik.json"
+# #CONFIG_PATH = Path("/app/config/config_dominik.json")  # Pfad im Container
+# SERVICE_ACCOUNT_FILE = CONFIG_DIR / "credentials.json"
+# # Excel-Datei im selben Ordner wie Script
+# EXCEL_LOAD_PATH = PROJECT_ROOT / "Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx"
+# Output-Ordner extern
+# OUTPUT_DIR = PROJECT_ROOT / "output"
+# OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+#OUTPUT_DIR = Path("/app/output")
+#OUTPUT_DIR.mkdir(exist_ok=True)  # falls im Container leer, wird erstellt
+
 
 # lädt json config
-with open("config/config_dominik.json","r") as config:
-    config = json.load(config)
+with open(CONFIG_PATH) as f:
+    config = json.load(f)
 
 #teilt congif inhalt den variablen zu
 CALENDAR_ID = config["calendar_id"]
-TAGS = config["tags"] #list of tags to search for in calendar events
-SERVICE_ACCOUNT_FILE = "config/credentials.json"
+TAGS = config["tags"] #list of tags to search for in calendar event
 SCOPES = [config["scopes"]] # api adress to access calendar data
-EXCEL_LOAD_PATH = config["excel_load_path"]
+#EXCEL_LOAD_PATH = config["excel_load_path"]
 
 wb = load_workbook(EXCEL_LOAD_PATH) # excel laden
 ws = wb.active # excel aktiv schalten
@@ -31,7 +70,7 @@ credentials = service_account.Credentials.from_service_account_file(
 service = build("calendar", "v3", credentials=credentials)
 
 # Aktuellen Monat berechnen
-# now = datetime(2026,4,1) gibt jahr monat und Tag an
+#now = datetime(2026,4,1) #bt jahr monat und Tag an
 now = datetime.utcnow()
 
 first_day = datetime(now.year, now.month, 1)
@@ -92,6 +131,6 @@ else:
           
             excel_setter(i,ws, datum=start_date, decimal_hours=decimal_hours, description=description,First_day=First_day, Last_day=Last_day) 
               
-            wb.save(f"/output/Muster_Honorarrechnung-Lehrkräfte_{month}.xlsx")
+            wb.save(OUTPUT_DIR / f"Muster_Honorarrechnung-Lehrkräfte_{month}.xlsx")
             i += 1 
           
