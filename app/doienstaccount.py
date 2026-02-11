@@ -11,6 +11,7 @@ First_day = ""
 Last_day = ""
 wb = load_workbook("app/Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx")
 ws = wb.active
+CALENDAR_ID = "dominikballentin@gmail.com"
 
 TAGS = ["#Pro", "#Vor","#pro", "#vor"]
 SERVICE_ACCOUNT_FILE = "credentials.json"
@@ -21,8 +22,6 @@ credentials = service_account.Credentials.from_service_account_file(
 )
 
 service = build("calendar", "v3", credentials=credentials)
-
-CALENDAR_ID = "dominikballentin@gmail.com"
 
 # Aktuellen Monat berechnen
 now = datetime.utcnow()
@@ -49,7 +48,7 @@ else:
     i = 32
     for event in events:
         
-        
+        #Tag und Uhrzeit des Termins
         start = event["start"].get("dateTime", event["start"].get("date"))
         end = event["end"].get("dateTime", event["end"].get("date"))
         
@@ -57,20 +56,23 @@ else:
        
         description = event.get("description", "")
        
-
+        # wenn einer der Tags in den Überschriften ist, dann führe das untere aus
         if any(tag in summary for tag in TAGS):
             
             start_dt = parser.parse(start) 
             end_dt = parser.parse(end) # Datum und Uhrzeit getrennt formatieren
             start_date = start_dt.strftime("%d.%m.%Y") 
+            # wenn der startwert für die Excel 32 ist dann setze das Firstdate (der Tag an dem das erste mal ein Termin oder die Vorbereitung stattfindet)
             if i == 32:
                 First_day = start_date
-            Last_day = start_date
+            # passe immer das Lastday an das start_date an, somit wird der letzte Tag durchgehen ermittelt     
+            Last_day = start_date # 
             start_time = start_dt.strftime("%H:%M") 
             end_date = end_dt.strftime("%d.%m.%Y") 
             end_time = end_dt.strftime("%H:%M")
 
-            dif =  end_dt - start_dt
+            #berechnet den letzten die Stundendiferenz
+            dif =  end_dt - start_dt 
             decimal_hours = dif.total_seconds() / 3600
             total_minutes = int(dif.total_seconds() // 60) 
             hours = total_minutes // 60 
