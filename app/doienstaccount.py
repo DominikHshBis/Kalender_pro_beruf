@@ -19,27 +19,26 @@ SERVICE_ACCOUNT_FILE = "config/credentials.json"
 SCOPES = [config["scopes"]] # api adress to access calendar data
 EXCEL_LOAD_PATH = config["excel_load_path"]
 
-wb = load_workbook(EXCEL_LOAD_PATH)
+wb = load_workbook(EXCEL_LOAD_PATH) # excel laden
+ws = wb.active # excel aktiv schalten
 First_day = ""
 Last_day = ""
-ws = wb.active
 
+#lädt die dredentials aus der json datei und gibt die Berechtigungen an, damit die API auf den Kalender zugreifen kann
 credentials = service_account.Credentials.from_service_account_file(
     SERVICE_ACCOUNT_FILE, scopes=SCOPES
-)
-
+) 
+#erstellt einen Dienst, um mit der Google Calendar API zu kommunizieren
 service = build("calendar", "v3", credentials=credentials)
 
-
-
 # Aktuellen Monat berechnen
+# now = datetime(2026,4,1) gibt jahr monat und Tag an
 now = datetime.utcnow()
 
-# now = datetime(2026,4,1) gibt jahr monat und Tag an
 first_day = datetime(now.year, now.month, 1)
 last_day = datetime(now.year, now.month, calendar.monthrange(now.year, now.month)[1])
 
-# In RFC3339-Format umwandeln
+# In RFC3339-Format umwandeln damit die API die Daten verstehen kann
 time_min = first_day.isoformat() + "Z"
 time_max = (last_day + timedelta(days=1)).isoformat() + "Z"
 
@@ -51,8 +50,8 @@ events_result = service.events().list(
     orderBy="startTime",
 ).execute()
 
-events = events_result.get("items", [])
-
+events = events_result.get("items", []) # gibt die Termine zurück, die im aktuellen Monat liegen als Liste von Ereignissen zurück. Jedes Ereignis enthält Informationen wie Start- und Endzeit, Titel, Beschreibung usw.
+# wenn in der Liste der Ereignisse keine Termine gefunden werden, wird eine Nachricht ausgegeben, dass keine Termine in diesem Monat vorhanden sind. Andernfalls wird für jedes Ereignis in der Liste eine Schleife durchlaufen, um die relevanten Informationen zu extrahieren und in die Excel-Datei einzutragen.
 if not events:
     print("Keine Termine in diesem Monat.")
 else:
@@ -76,7 +75,7 @@ else:
             if i == 32:
                 First_day = start_date
             # passe immer das Lastday an das start_date an, somit wird der letzte Tag durchgehen ermittelt     
-            Last_day = start_date # 
+            Last_day = start_date 
             start_time = start_dt.strftime("%H:%M") 
             end_date = end_dt.strftime("%d.%m.%Y") 
             end_time = end_dt.strftime("%H:%M")
