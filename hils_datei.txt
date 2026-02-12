@@ -9,3 +9,6 @@ PS C:\Users\domin\Desktop> docker run -d `
 >>   --name kalender `
 >>   app
 
+crontab -
+0 * * * * docker run --rm -v /root/google-export-data:/app/data google-export:latest >> /var/log/google_export.log 2>&1
+e

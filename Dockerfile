@@ -16,5 +16,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY app /app/
 
 # Standard-Startbefehl (wird durch Cron überschrieben)
-CMD ["sh", "-c", "python3 doienstaccount.py && tail -f /dev/null"]
+#CMD ["sh", "-c", "python3 doienstaccount.py && tail -f /dev/null"]
+CMD ["python3", "doienstaccount.py"]
+
 
