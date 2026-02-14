@@ -12,3 +12,20 @@ PS C:\Users\domin\Desktop> docker run -d `
 crontab -
 0 * * * * docker run --rm -v /root/google-export-data:/app/data google-export:latest >> /var/log/google_export.log 2>&1
 e
+
+bitte alle dateien anlegen. hier ist die Ordnerstruktur die erwartet wird
+
+/srv/kalender/
+│
+├─ config/
+│    ├─ config_dominik.json
+│    └─ credentials.json
+│
+├─ Input_data/
+│    └─ Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx
+│
+├─ output/
+│    └─ (leer, wird vom Container beschrieben)
+│
+├─ .env.prod
+└─ compose.prod.yaml

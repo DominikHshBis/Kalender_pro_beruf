@@ -1,9 +1,16 @@
 version: "3.9"
 
 services:
-  rechnung:
-    build: .
-    container_name: rechnung_bot
+  kalender:
+    image: kalender-app
+    container_name: kalender
+    restart: unless-stopped
+
+    env_file:
+      - .env.dev
+
     volumes:
-      - ./app/output:/app/output
-    working_dir: /app
+      - ./config:/app/config
+      - ./Input_data:/app/Input_data
+      - ./output:/app/output
+

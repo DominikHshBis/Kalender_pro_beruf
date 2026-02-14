@@ -22,7 +22,7 @@ def find_file(filename: str, start_dir: Path) -> Path:
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent # Config automatisch finden
 
-def env_path(var_name: str, default: str) -> Path: 
+def env_path(var_name: str, default: str) -> Path:  # fallback version
     """Nimmt ENV-Wert oder Default relativ zum Projekt."""
     value = os.getenv(var_name) 
     if value: 
