@@ -8,22 +8,39 @@ from Excel_eintrag import excel_setter
 import json
 from openpyxl import load_workbook
 from pathlib import Path
-
+from dotenv import load_dotenv
 from pathlib import Path
 import json
 from openpyxl import load_workbook
+import os
+
+load_dotenv()
 
 def find_file(filename: str, start_dir: Path) -> Path:
     for path in start_dir.rglob(filename): 
         return path 
-    raise FileNotFoundError(f"Datei '{filename}' wurde nicht gefunden.")
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent # Config automatisch finden 
-CONFIG_PATH = find_file("config_dominik.json", PROJECT_ROOT) 
-SERVICE_ACCOUNT_FILE = find_file("credentials.json", PROJECT_ROOT) # Excel automatisch finden 
-EXCEL_LOAD_PATH = find_file("Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx", PROJECT_ROOT) # Output-Ordner 
-OUTPUT_DIR = PROJECT_ROOT / "output"
+PROJECT_ROOT = Path(__file__).resolve().parent.parent # Config automatisch finden
+
+def env_path(var_name: str, default: str) -> Path: 
+    """Nimmt ENV-Wert oder Default relativ zum Projekt."""
+    value = os.getenv(var_name) 
+    if value: 
+        return Path(value) 
+    return find_file(default,PROJECT_ROOT)
+
+CONFIG_PATH = env_path("CONFIG_PATH", "config_dominik.json") 
+SERVICE_ACCOUNT_FILE = env_path("SERVICE_ACCOUNT_FILE", "credentials.json") 
+EXCEL_LOAD_PATH = env_path("EXCEL_LOAD_PATH", "Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx") 
+OUTPUT_DIR = Path(os.getenv("OUTPUT_DIR", PROJECT_ROOT / "output")) 
 OUTPUT_DIR.mkdir(exist_ok=True)
+
+
+# CONFIG_PATH = find_file("config_dominik.json", PROJECT_ROOT) 
+# SERVICE_ACCOUNT_FILE = find_file("credentials.json", PROJECT_ROOT) # Excel automatisch finden 
+# EXCEL_LOAD_PATH = find_file("Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx", PROJECT_ROOT) # Output-Ordner 
+# OUTPUT_DIR = PROJECT_ROOT / "output"
+# OUTPUT_DIR.mkdir(exist_ok=True)
 
 # lädt json config
 with open(CONFIG_PATH) as f:
