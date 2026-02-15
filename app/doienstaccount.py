@@ -35,13 +35,6 @@ EXCEL_LOAD_PATH = env_path("EXCEL_LOAD_PATH", "Muster_Honorarrechnung-Lehrkräft
 OUTPUT_DIR = Path(os.getenv("OUTPUT_DIR", PROJECT_ROOT / "output")) 
 OUTPUT_DIR.mkdir(exist_ok=True)
 
-
-# CONFIG_PATH = find_file("config_dominik.json", PROJECT_ROOT) 
-# SERVICE_ACCOUNT_FILE = find_file("credentials.json", PROJECT_ROOT) # Excel automatisch finden 
-# EXCEL_LOAD_PATH = find_file("Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx", PROJECT_ROOT) # Output-Ordner 
-# OUTPUT_DIR = PROJECT_ROOT / "output"
-# OUTPUT_DIR.mkdir(exist_ok=True)
-
 # lädt json config
 with open(CONFIG_PATH) as f:
     config = json.load(f)
@@ -84,19 +77,6 @@ last_utc = last_local.astimezone(ZoneInfo("UTC"))
 
 time_min = first_utc.isoformat().replace("+00:00", "Z")
 time_max = last_utc.isoformat().replace("+00:00", "Z")
-
-#offset_hours = datetime.now(ZoneInfo("Europe/Berlin")).utcoffset().total_seconds() / 3600
-
-# now = datetime.utcnow() #- timedelta(hours=offset_hours)
-
-# #now = datetime.utcnow()
-
-# first_day = datetime(now.year, now.month, 1)
-# last_day = datetime(now.year, now.month, calendar.monthrange(now.year, now.month)[1])
-
-# # In RFC3339-Format umwandeln damit die API die Daten verstehen kann
-# time_min = first_day.isoformat() + "Z"
-# time_max = (last_day + timedelta(days=1)).isoformat() + "Z"
 
 events_result = service.events().list(
     calendarId=CALENDAR_ID,
