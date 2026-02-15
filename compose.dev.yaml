@@ -4,10 +4,12 @@ services:
   kalender:
     image: kalender-app
     container_name: kalender
-    restart: unless-stopped
+    restart: "no"
 
     env_file:
       - .env.dev
+    user: "1000:1000"
+
 
     volumes:
       - ./config:/app/config

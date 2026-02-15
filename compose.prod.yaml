@@ -1,0 +1,11 @@
+services:
+  kalender:
+    image: kalender-app
+    env_file:
+      - .env.prod
+    restart: "no"
+    user: "1000:1000"
+    volumes:
+      - /srv/kalender/config:/app/config
+      - /srv/kalender/Input_data:/app/Input_data
+      - /srv/kalender/output:/app/output
