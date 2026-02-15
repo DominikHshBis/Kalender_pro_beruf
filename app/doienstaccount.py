@@ -29,7 +29,7 @@ def env_path(var_name: str, default: str) -> Path:  # fallback version
         return Path(value) 
     return find_file(default,PROJECT_ROOT)
 
-CONFIG_PATH = env_path("CONFIG_PATH", "config_dominik.json") 
+CONFIG_PATH = env_path("CONFIG_PATH", "config.json") 
 SERVICE_ACCOUNT_FILE = env_path("SERVICE_ACCOUNT_FILE", "credentials.json") 
 EXCEL_LOAD_PATH = env_path("EXCEL_LOAD_PATH", "Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx") 
 OUTPUT_DIR = Path(os.getenv("OUTPUT_DIR", PROJECT_ROOT / "output")) 
