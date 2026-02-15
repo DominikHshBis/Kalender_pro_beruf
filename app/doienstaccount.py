@@ -39,7 +39,7 @@ OUTPUT_DIR.mkdir(exist_ok=True)
 with open(CONFIG_PATH) as f:
     config = json.load(f)
 
-#teilt congif inhalt den variablen zu
+#teilt config inhalt den variablen zu
 CALENDAR_ID = config["calendar_id"]
 TAGS = config["tags"] #list of tags to search for in calendar event
 SCOPES = [config["scopes"]] # api adress to access calendar data
