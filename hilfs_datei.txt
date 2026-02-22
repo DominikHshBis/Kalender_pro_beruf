@@ -5,12 +5,9 @@ docker load -i image.tar
 docker compose up -d
 docker compose down
 
-PS C:\Users\domin\Desktop> docker run -d `
->>   -v D:\output:/output `
->>   -v D:\config:/app/config `
->>   --name kalender `
->>   app
+PS D:\Projektordner> $env:ENV_FILE=".env.prod"
 
+cronjob: 
 crontab -
 0 * * * * docker run --rm -v /root/google-export-data:/app/data google-export:latest >> /var/log/google_export.log 2>&1
 e

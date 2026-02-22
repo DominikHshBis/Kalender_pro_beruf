@@ -9,9 +9,6 @@ import json
 from openpyxl import load_workbook
 from pathlib import Path
 from dotenv import load_dotenv
-from pathlib import Path
-import json
-from openpyxl import load_workbook
 import os
 
 load_dotenv()
@@ -87,8 +84,10 @@ events_result = service.events().list(
     timeZone = "Europe/Berlin"
 ).execute()
 
-events = events_result.get("items", []) # gibt die Termine zurück, die im aktuellen Monat liegen als Liste von Ereignissen zurück. Jedes Ereignis enthält Informationen wie Start- und Endzeit, Titel, Beschreibung usw.
+# gibt die Termine zurück, die im aktuellen Monat liegen als Liste von Ereignissen zurück. Jedes Ereignis enthält Informationen wie Start- und Endzeit, Titel, Beschreibung usw.
 # wenn in der Liste der Ereignisse keine Termine gefunden werden, wird eine Nachricht ausgegeben, dass keine Termine in diesem Monat vorhanden sind. Andernfalls wird für jedes Ereignis in der Liste eine Schleife durchlaufen, um die relevanten Informationen zu extrahieren und in die Excel-Datei einzutragen.
+
+events = events_result.get("items", [])
 if not events:
     print("Keine Termine in diesem Monat.")
 else:
