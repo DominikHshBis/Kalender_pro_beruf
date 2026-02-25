@@ -17,7 +17,7 @@ def excel_setter(i,ws, datum, decimal_hours, description,First_day, Last_day, st
     ws["C23"] = f"{now.month-1}/{now.year}"
     ws["C24"] = f"{First_day} bis {Last_day}"
     ws["E23"] = f"{Last_day}"
-    ws["A29"] = f"für die unten aufgeführten Leistungen als Honorardozent:in im Projekt Assistierte Ausbildung AsA VIII berechne ich Ihnen wie folgt: "
+    ws["A29"] = f"für die unten aufgeführten Leistungen für den Stütz- und Förderunterricht in der Ausbildungsassistenz im Projekt Assistierte Ausbildung AsA VIII berechne ich Ihnen wie folgt: "
 
 # Datei speichernd
 
