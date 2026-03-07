@@ -10,30 +10,34 @@ from openpyxl import load_workbook
 from pathlib import Path
 from dotenv import load_dotenv
 import os
+from path_resolver import PathResolver  # Neu: Import der PathResolver-Klasse
 
 load_dotenv()
 
-def find_file(filename: str, start_dir: Path) -> Path:
-    for path in start_dir.rglob(filename): 
-        return path 
+# Neu: PathResolver initialisieren
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+path_resolver = PathResolver(PROJECT_ROOT)
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent # Config automatisch finden
+# Auskommentiert: Alte Pfad-Funktionen und -Variablen
+# def find_file(filename: str, start_dir: Path) -> Path:
+#     for path in start_dir.rglob(filename): 
+#         return path Mhm.
+# def env_path(var_name: str, default: str) -> Path:  # fallback version
+#     """Nimmt ENV-Wert oder Default relativ zum Projekt."""
+#     value = os.getenv(var_name) 
+#     if value: 
+#         return Path(value) 
+#     return find_file(default,PROJECT_ROOT)
 
-def env_path(var_name: str, default: str) -> Path:  # fallback version
-    """Nimmt ENV-Wert oder Default relativ zum Projekt."""
-    value = os.getenv(var_name) 
-    if value: 
-        return Path(value) 
-    return find_file(default,PROJECT_ROOT)
 
-CONFIG_PATH = env_path("CONFIG_PATH", "config.json") 
-SERVICE_ACCOUNT_FILE = env_path("SERVICE_ACCOUNT_FILE", "credentials.json") 
-EXCEL_LOAD_PATH = env_path("EXCEL_LOAD_PATH", "Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx") 
-OUTPUT_DIR = Path(os.getenv("OUTPUT_DIR", PROJECT_ROOT / "output")) 
-OUTPUT_DIR.mkdir(exist_ok=True)
+# CONFIG_PATH = env_path("CONFIG_PATH", "config.json") 
+# SERVICE_ACCOUNT_FILE = env_path("SERVICE_ACCOUNT_FILE", "credentials.json") 
+# EXCEL_LOAD_PATH = env_path("EXCEL_LOAD_PATH", "Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx") 
+# OUTPUT_DIR = Path(os.getenv("OUTPUT_DIR", PROJECT_ROOT / "output")) 
+# OUTPUT_DIR.mkdir(exist_ok=True)
 
 # lädt json config
-with open(CONFIG_PATH) as f:
+with open(path_resolver.config_path) as f:
     config = json.load(f)
 
 #teilt config inhalt den variablen zu
@@ -42,14 +46,14 @@ TAGS = config["tags"] #list of tags to search for in calendar event
 SCOPES = [config["scopes"]] # api adress to access calendar data
 #EXCEL_LOAD_PATH = config["excel_load_path"]
 
-wb = load_workbook(EXCEL_LOAD_PATH) # excel laden
+wb = load_workbook(path_resolver.excel_load_path) # excel laden
 ws = wb.active # excel aktiv schalten
 First_day = ""
 Last_day = ""
 
 #lädt die dredentials aus der json datei und gibt die Berechtigungen an, damit die API auf den Kalender zugreifen kann
 credentials = service_account.Credentials.from_service_account_file(
-    SERVICE_ACCOUNT_FILE, scopes=SCOPES
+    path_resolver.service_account_file, scopes=SCOPES
 ) 
 #erstellt einen Dienst, um mit der Google Calendar API zu kommunizieren
 service = build("calendar", "v3", credentials=credentials)
@@ -129,6 +133,5 @@ else:
           
             excel_setter(i,ws, datum=start_date, decimal_hours=decimal_hours, description=description,First_day=First_day, Last_day=Last_day) 
               
-            wb.save(OUTPUT_DIR / f"Muster_Honorarrechnung-Lehrkräfte_{month}.xlsx")
-            i += 1 
-          
+            wb.save(path_resolver.output_dir / f"Muster_Honorarrechnung-Lehrkräfte_{month}.xlsx")
+i += 1 
