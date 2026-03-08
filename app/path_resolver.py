@@ -34,6 +34,10 @@ class PathResolver:
         return self.env_path("EXCEL_LOAD_PATH", "Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx")
     
     @property
+    def excel_load_path_ho(self) -> Path:
+        return self.env_path("EXCEL_LOAD_PATH_HO", "Homeoffice_zaehler.xlsx")
+    
+    @property
     def output_dir(self) -> Path:
         output_dir = Path(os.getenv("OUTPUT_DIR", self.project_root / "output"))
         output_dir.mkdir(exist_ok=True)

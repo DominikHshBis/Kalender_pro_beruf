@@ -7,7 +7,8 @@ from datetime import datetime
 def excel_setter(i,ws, datum, decimal_hours, description,First_day, Last_day, stundensatz=19):
     BERLIN = ZoneInfo("Europe/Berlin")
     now = datetime.now(BERLIN)
-    # Zeile 31 befüllen
+    
+    # ab Zeile 31 befüllen
    
     ws[f"A{i}"] = datum     # Datum
     ws[f"B{i}"] = decimal_hours                # Stunden
@@ -19,5 +20,13 @@ def excel_setter(i,ws, datum, decimal_hours, description,First_day, Last_day, st
     ws["E23"] = f"{Last_day}"
     ws["A29"] = f"für die unten aufgeführten Leistungen für den Stütz- und Förderunterricht in der Ausbildungsassistenz im Projekt Assistierte Ausbildung AsA VIII berechne ich Ihnen wie folgt: "
 
-# Datei speichernd
+def excel_setter_homeoffice_p(ws2,d, datum, kunde=""):
+    ws2[f"A{d}"] = datum
+    ws2[f"B{d}"] = f"Vorbereitungstag {kunde}"
+    ws2[f"C{d}"] = f"{d}"
+
+    
+   
+
+   
 

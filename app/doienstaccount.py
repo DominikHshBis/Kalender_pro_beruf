@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from dateutil import parser
 from zoneinfo import ZoneInfo
 import calendar
-from Excel_eintrag import excel_setter
+from Excel_eintrag import excel_setter, excel_setter_homeoffice_p
 import json
 from openpyxl import load_workbook
 from pathlib import Path
@@ -32,7 +32,7 @@ path_resolver = PathResolver(PROJECT_ROOT)
 
 # CONFIG_PATH = env_path("CONFIG_PATH", "config.json") 
 # SERVICE_ACCOUNT_FILE = env_path("SERVICE_ACCOUNT_FILE", "credentials.json") 
-# EXCEL_LOAD_PATH = env_path("EXCEL_LOAD_PATH", "Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx") 
+# EXCEL_LOAD_PATH = env_path(" EXCEL_LOAD_PATH", "Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx") 
 # OUTPUT_DIR = Path(os.getenv("OUTPUT_DIR", PROJECT_ROOT / "output")) 
 # OUTPUT_DIR.mkdir(exist_ok=True)
 
@@ -40,23 +40,40 @@ path_resolver = PathResolver(PROJECT_ROOT)
 with open(path_resolver.config_path) as f:
     config = json.load(f)
 
-#teilt config inhalt den variablen zu
+# teilt config inhalt den variablen zu
+
+
+
+
+vor_pro = dict()
 CALENDAR_ID = config["calendar_id"]
-TAGS = config["tags"] #list of tags to search for in calendar event
-SCOPES = [config["scopes"]] # api adress to access calendar data
-#EXCEL_LOAD_PATH = config["excel_load_path"]
-
-wb = load_workbook(path_resolver.excel_load_path) # excel laden
-ws = wb.active # excel aktiv schalten
-First_day = ""
-Last_day = ""
-
-#lädt die dredentials aus der json datei und gibt die Berechtigungen an, damit die API auf den Kalender zugreifen kann
+TAGS = config["tags"]  # list of tags to search for in calendar event
+SCOPES = [config["scopes"]]  # api adress to access calendar data
+# EXCEL_LOAD_PATH = config["excel_load_path"]
+def schleifer(ws2,day):
+    d = 0
+    for day, tags in vor_pro.items():
+        if tags["vor"] and not tags["pro"]:
+            d += 1
+            excel_setter_homeoffice_p(ws2,datum=day, d=d)
+            print(day, "nur #vor")
+    return d
+# credentials möglichst früh initialisieren, direkt nach SCOPES
+# laden der credentials aus der json datei und Berechtigungen für API
 credentials = service_account.Credentials.from_service_account_file(
     path_resolver.service_account_file, scopes=SCOPES
-) 
-#erstellt einen Dienst, um mit der Google Calendar API zu kommunizieren
+)
+# erstellt einen Dienst, um mit der Google Calendar API zu kommunizieren
 service = build("calendar", "v3", credentials=credentials)
+
+# excel laden und weitere Variablen
+wb = load_workbook(path_resolver.excel_load_path)
+wb2 = load_workbook(path_resolver.excel_load_path_ho)  # excel laden
+ws = wb.active  # excel aktiv schalten
+ws2 = wb2.active  # excel2 aktiv schalten
+First_day = ""
+Last_day = ""
+start_date = ""
 
 # Aktuellen Monat berechnen
 #now = datetime(2026,4,1) #bt jahr monat und Tag an
@@ -96,18 +113,29 @@ if not events:
     print("Keine Termine in diesem Monat.")
 else:
     i = 32
+  
     for event in events:
            
         start = event["start"].get("dateTime", event["start"].get("date"))
         end = event["end"].get("dateTime", event["end"].get("date"))
 
         summary = event.get("summary", "(kein Titel)",)
-       
+        daylie_date = start[:10]
+        
+        #print(daylie_date)
         description = event.get("description", "")
-       
+        
         # wenn einer der Tags in den Überschriften ist, dann führe das untere aus
         if any(tag in summary for tag in TAGS):
-            
+                            
+            if daylie_date not in vor_pro:
+                vor_pro[daylie_date] = {"vor": False, "pro": False} 
+            if ("#vor" in summary or "#Vor" in summary):
+                vor_pro[daylie_date]["vor"] = True
+                       
+            if ("#pro" in summary or "#Pro" in summary):
+                vor_pro[daylie_date]["pro"] = True
+
             start_dt = parser.parse(start) 
             end_dt = parser.parse(end) # Datum und Uhrzeit getrennt formatieren
             start_date = start_dt.strftime("%d.%m.%Y") 
@@ -129,9 +157,16 @@ else:
             month = datetime.now().strftime("%B")
             #month = datetime(2026,3,1).strftime("%B")
             #print(f"{decimal_hours} Stunden")
-          
+         
           
             excel_setter(i,ws, datum=start_date, decimal_hours=decimal_hours, description=description,First_day=First_day, Last_day=Last_day) 
-              
+            
             wb.save(path_resolver.output_dir / f"Muster_Honorarrechnung-Lehrkräfte_{month}.xlsx")
-i += 1 
+            
+            
+            i += 1 
+    schleifer(ws2, start_date)
+    wb2.save(path_resolver.output_dir / f"Homeoffice_zaehler.xlsx")
+    #excel_setter_homeoffice_p(ws2,datum=start_date, d=d)
+    #print("Anzahl Vorbereitungstage:", d)        
+#print(d)
