@@ -21,6 +21,7 @@ def excel_setter(i,ws, datum, decimal_hours, description,First_day, Last_day, st
     ws["A29"] = f"für die unten aufgeführten Leistungen für den Stütz- und Förderunterricht in der Ausbildungsassistenz im Projekt Assistierte Ausbildung AsA VIII berechne ich Ihnen wie folgt: "
 
 def excel_setter_homeoffice_p(ws2,d, datum, kunde="", betrag=6):
+    d = ws2.max_row + 1
     ws2[f"A{d}"] = datum
     ws2[f"B{d}"] = f"Vorbereitungstag {kunde}"
     ws2[f"C{d}"] = f"{d}"

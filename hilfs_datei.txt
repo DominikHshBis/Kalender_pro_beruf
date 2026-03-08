@@ -1,5 +1,5 @@
 docker build -t kalender-app .
-docker save -o kalender-app.tar kalender-app
+docker save -o kalender2-app.tar kalender2-app
 
 docker load -i image.tar
 docker compose up -d

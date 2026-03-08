@@ -17,7 +17,7 @@ class PathResolver:
         """Nimmt ENV-Wert oder Default-Pfad."""
         value = os.getenv(var_name)
         if value:
-            return Path(value)
+            return self.project_root / value
         found = self.find_file(default)
         return found if found else self.project_root / default  # Fallback
     

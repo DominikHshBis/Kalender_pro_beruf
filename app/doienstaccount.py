@@ -56,7 +56,7 @@ def schleifer(ws2,day):
         if tags["vor"] and not tags["pro"]:
             d += 1
             excel_setter_homeoffice_p(ws2,datum=day, d=d)
-            print(day, "nur #vor")
+            #print(day, "nur #vor")
     return d
 # credentials möglichst früh initialisieren, direkt nach SCOPES
 # laden der credentials aus der json datei und Berechtigungen für API
