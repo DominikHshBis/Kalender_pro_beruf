@@ -10,55 +10,56 @@ from openpyxl import load_workbook
 from pathlib import Path
 from dotenv import load_dotenv
 import os
+from Invoice_creater import FastBill_invoice_creator
 from path_resolver import PathResolver  # Neu: Import der PathResolver-Klasse
 
 load_dotenv()
-
+vor_pro = dict()
 # Neu: PathResolver initialisieren
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 path_resolver = PathResolver(PROJECT_ROOT)
 
-# Auskommentiert: Alte Pfad-Funktionen und -Variablen
-# def find_file(filename: str, start_dir: Path) -> Path:
-#     for path in start_dir.rglob(filename): 
-#         return path Mhm.
-# def env_path(var_name: str, default: str) -> Path:  # fallback version
-#     """Nimmt ENV-Wert oder Default relativ zum Projekt."""
-#     value = os.getenv(var_name) 
-#     if value: 
-#         return Path(value) 
-#     return find_file(default,PROJECT_ROOT)
-
-
-# CONFIG_PATH = env_path("CONFIG_PATH", "config.json") 
-# SERVICE_ACCOUNT_FILE = env_path("SERVICE_ACCOUNT_FILE", "credentials.json") 
-# EXCEL_LOAD_PATH = env_path(" EXCEL_LOAD_PATH", "Muster_Honorarrechnung-Lehrkräfte_pytest.xlsx") 
-# OUTPUT_DIR = Path(os.getenv("OUTPUT_DIR", PROJECT_ROOT / "output")) 
-# OUTPUT_DIR.mkdir(exist_ok=True)
-
-# lädt json config
 with open(path_resolver.config_path) as f:
     config = json.load(f)
 
-# teilt config inhalt den variablen zu
+FastBill_invoice_creator_instance = FastBill_invoice_creator(project_root=path_resolver.fastbill_config)
 
 
-
-
-vor_pro = dict()
 CALENDAR_ID = config["calendar_id"]
 TAGS = config["tags"]  # list of tags to search for in calendar event
 SCOPES = [config["scopes"]]  # api adress to access calendar data
 # EXCEL_LOAD_PATH = config["excel_load_path"]
-def schleifer(ws2,day):
+# def schleifer_for(ws2,day):
+#     d = 0
+#     for day, tags in vor_pro.items():
+#         if tags["vor"] and not tags["pro"]:
+#             d += 1
+#             excel_setter_homeoffice_p(ws2,datum=day, d=d)
+#             #print(day, "nur #vor")
+#     return d
+def excel_homeoffice_setter(ws2,day):
     d = 0
     for day, tags in vor_pro.items():
         if tags["vor"] and not tags["pro"]:
             d += 1
             excel_setter_homeoffice_p(ws2,datum=day, d=d)
-            #print(day, "nur #vor")
+
+def vor_counter(searchtag, not_searchtag):
+    d = 0
+    for day,tags in vor_pro.items():
+       # print(tags)
+        if tags[searchtag] and not tags[not_searchtag]:
+            d += 1
     return d
-# credentials möglichst früh initialisieren, direkt nach SCOPES
+def pro_counter(searchtag):
+    d = 0
+    for day,tags in vor_pro.items():
+       # print(tags)
+        if tags[searchtag]:
+            d += 1
+    return d
+
+            #print(day, "nur #vor")edentials möglichst früh initialisieren, direkt nach SCOPES
 # laden der credentials aus der json datei und Berechtigungen für API
 credentials = service_account.Credentials.from_service_account_file(
     path_resolver.service_account_file, scopes=SCOPES
@@ -74,6 +75,8 @@ ws2 = wb2.active  # excel2 aktiv schalten
 First_day = ""
 Last_day = ""
 start_date = ""
+hours_prepared=0
+hours_teaching=0
 
 # Aktuellen Monat berechnen
 #now = datetime(2026,4,1) #bt jahr monat und Tag an
@@ -152,21 +155,42 @@ else:
             dif =  end_dt - start_dt 
             decimal_hours = dif.total_seconds() / 3600
             total_minutes = int(dif.total_seconds() // 60) 
-            hours = total_minutes // 60 
+            hours = total_minutes // 60
+            if i %2!=0:
+                hours_teaching += hours
+            if i %2==0:
+                hours_prepared += 1
             minutes = total_minutes % 60
             month = datetime.now().strftime("%B")
             #month = datetime(2026,3,1).strftime("%B")
             #print(f"{decimal_hours} Stunden")
-         
+            
           
             excel_setter(i,ws, datum=start_date, decimal_hours=decimal_hours, description=description,First_day=First_day, Last_day=Last_day) 
             
             wb.save(path_resolver.output_dir / f"Muster_Honorarrechnung-Lehrkräfte_{month}.xlsx")
             
             
-            i += 1 
-    schleifer(ws2, start_date)
-    wb2.save(path_resolver.output_dir / f"Homeoffice_zaehler.xlsx")
-    #excel_setter_homeoffice_p(ws2,datum=start_date, d=d)
+            i += 1
+from datetime import datetime
+
+Last_day = datetime.strptime(Last_day, "%d.%m.%Y")
+Last_day_adjusted = Last_day.strftime("%Y-%m-%d")
+First_day = datetime.strptime(First_day, "%d.%m.%Y")
+First_day_adjusted = First_day.strftime("%Y-%m-%d") 
+#vor_counts = vor_counter("vor", "pro")
+#pro_counts = pro_counter("pro")
+now = datetime.now().strftime("%Y-%m-%d")
+
+create_response = FastBill_invoice_creator_instance.create_invoice(start_date=First_day_adjusted,
+                                                                   end_date=Last_day_adjusted,
+                                                                   current_date=now,
+                                                                   quantity_preparing=hours_prepared,
+                                                                   quantity_teaching=hours_teaching)
+                                                                   
+#print(create_response)
+    #excel_homeoffice_setter(ws2, start_date)
+    #wb2.save(path_resolver.output_dir / f"Homeoffice_zaehler.xlsx")
+  
     #print("Anzahl Vorbereitungstage:", d)        
 #print(d)

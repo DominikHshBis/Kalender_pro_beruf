@@ -26,6 +26,10 @@ class PathResolver:
         return self.env_path("CONFIG_PATH", "config.json")
     
     @property
+    def fastbill_config(self) -> Path:
+        return self.env_path("FASTBILL_CONFIG_PATH", "fast_bill_credentials.json")
+    
+    @property
     def service_account_file(self) -> Path:
         return self.env_path("SERVICE_ACCOUNT_FILE", "credentials.json")
     
