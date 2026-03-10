@@ -157,10 +157,14 @@ else:
             decimal_hours = dif.total_seconds() / 3600
             total_minutes = int(dif.total_seconds() // 60) 
             hours = total_minutes // 60
-            if i %2!=0:
-                hours_teaching += hours
-            if i %2==0:
+        
+            """---------------------nochmalüberarbeiten"""
+            if "#vor" in summary or "#Vor" in summary: # wenn #vor in der Überschrift ist, dann addiere die Stunden zu den Vorbereitungstunden
                 hours_prepared += 1
+            if "#pro" in summary or "#Pro" in summary: # wenn #pro in der Überschrift ist, dann addiere die Stunden zu den Unterrichtsstunden
+                hours_teaching += hours
+            """--------------------------------------------"""
+            print(hours_prepared, hours_teaching)
             minutes = total_minutes % 60
             month = datetime.now().strftime("%B")
             #month = datetime(2026,3,1).strftime("%B")
@@ -173,30 +177,37 @@ else:
             
             
             i += 1
-from datetime import datetime
-
+"""muss nochmal angepasst werden-------------------------------"""
 Last_day = datetime.strptime(Last_day, "%d.%m.%Y")
 Last_day_adjusted = Last_day.strftime("%Y-%m-%d")
 First_day = datetime.strptime(First_day, "%d.%m.%Y")
 First_day_adjusted = First_day.strftime("%Y-%m-%d") 
-#vor_counts = vor_counter("vor", "pro")
-#pro_counts = pro_counter("pro")
 now = datetime.now().strftime("%Y-%m-%d")
+""""------------------------------------------------------------"""
 
-create_response = FastBill_invoice_creator_instance.create_invoice(start_date=First_day_adjusted,
-                                                                   end_date=Last_day_adjusted,
-                                                                   current_date=now,
-                                                                   quantity_preparing=hours_prepared,
-                                                                   quantity_teaching=hours_teaching)
 
-with open(path_resolver.output_dir / "last_invoice_ID.txt", "w") as f:
-    f.write(str(create_response))
-    
-time.sleep(5)  # Warte 5 Sekunden, um sicherzustellen, dass die Rechnung erstellt wurde, bevor du versuchst, sie zu löschen
-with open(path_resolver.output_dir / "last_invoice_ID.txt", "r") as f:
-    content = f.read()
-print(content)
-delete_response = FastBill_invoice_creator_instance.delete_invoice(content)                                                       
+"""wenn ordner existiert und datei existiert, lese die datei aus. wenn nichts in der datei steht erstelle eine Rechnung
+wenn deine nummer existiert. lösche die rechnung und erstelle dann eine neue rechnung
+"""
+def delete_invoice_if_exists_and_create_new():
+    if (path_resolver.output_dir / "last_invoice_ID.txt").exists():
+        with open(path_resolver.output_dir / "last_invoice_ID.txt", "r") as f:
+            content = f.read()
+            print(content)
+        if content:
+            FastBill_invoice_creator_instance.delete_invoice(content)
+    responded_invoice_id = FastBill_invoice_creator_instance.create_invoice(start_date=First_day_adjusted,
+                                                                    end_date=Last_day_adjusted,
+                                                                    current_date=now,
+                                                                    quantity_preparing=hours_prepared,
+                                                                    quantity_teaching=hours_teaching)
+    with open(path_resolver.output_dir / "last_invoice_ID.txt", "w") as f:
+        f.write(str(responded_invoice_id))
+
+delete_invoice_if_exists_and_create_new()
+
+  # Warte 5 Sekunden, um sicherzustellen, dass die Rechnung erstellt wurde, bevor du versuchst, sie zu löschen
+                                                      
 #print(create_response)
     #excel_homeoffice_setter(ws2, start_date)
     #wb2.save(path_resolver.output_dir / f"Homeoffice_zaehler.xlsx")

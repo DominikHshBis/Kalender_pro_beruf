@@ -11,7 +11,7 @@ class FastBill_invoice_creator:
             "key": self.config_data["Authorization"],
             "content_type": self.config_data["Content-Type"]
         }
-        self.current_date = "2026-01-01"
+        self.current_date = "20-03-2026"
         self.standard_text= f"\n die Abrechnung erfolgt ausschließlich auf Grundlage dieser Rechnung. Der vom Träger erstellte Leistungsnachweis vom {self.current_date} dient lediglich als Tätigkeitsnachweis und stellt keine Rechnung dar. Eine doppelte Abrechnung ist ausgeschlossen. Für die unten aufgeführten Leistungen für den Stütz- und Förderunterricht in der Ausbildungsassistenz im Projekt Assistierte Ausbildung AsA VIII / AsA IX berechne ich Ihnen wie folgt:"
 
     def create_invoice(self, current_date = "2026-03-30", start_date = "2026-03-01", end_date = "2026-03-31", quantity_preparing = 1, quantity_teaching = 1) -> int: 
