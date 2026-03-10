@@ -1,6 +1,6 @@
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 from dateutil import parser
 from zoneinfo import ZoneInfo
 import calendar
@@ -10,6 +10,7 @@ from openpyxl import load_workbook
 from pathlib import Path
 from dotenv import load_dotenv
 import os
+import time
 from Invoice_creater import FastBill_invoice_creator
 from path_resolver import PathResolver  # Neu: Import der PathResolver-Klasse
 
@@ -187,7 +188,15 @@ create_response = FastBill_invoice_creator_instance.create_invoice(start_date=Fi
                                                                    current_date=now,
                                                                    quantity_preparing=hours_prepared,
                                                                    quantity_teaching=hours_teaching)
-                                                                   
+
+with open(path_resolver.output_dir / "last_invoice_ID.txt", "w") as f:
+    f.write(str(create_response))
+    
+time.sleep(5)  # Warte 5 Sekunden, um sicherzustellen, dass die Rechnung erstellt wurde, bevor du versuchst, sie zu löschen
+with open(path_resolver.output_dir / "last_invoice_ID.txt", "r") as f:
+    content = f.read()
+print(content)
+delete_response = FastBill_invoice_creator_instance.delete_invoice(content)                                                       
 #print(create_response)
     #excel_homeoffice_setter(ws2, start_date)
     #wb2.save(path_resolver.output_dir / f"Homeoffice_zaehler.xlsx")
