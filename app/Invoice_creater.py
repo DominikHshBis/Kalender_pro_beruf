@@ -40,7 +40,7 @@ class FastBill_invoice_creator:
                     },
                     {
                         "DESCRIPTION": "Stütz-Unterricht\nFörderunterricht und Unterstützung in der Ausbildung",
-                        "QUANTITY": quantity_teaching, # achtung, da muss ich nochmal ran
+                        "QUANTITY": quantity_teaching, 
                         "UNIT": "Stunde",
                         "UNIT_PRICE": 19,
                         "VAT_PERCENT": 0

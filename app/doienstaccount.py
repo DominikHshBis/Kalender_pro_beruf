@@ -29,15 +29,7 @@ FastBill_invoice_creator_instance = FastBill_invoice_creator(project_root=path_r
 CALENDAR_ID = config["calendar_id"]
 TAGS = config["tags"]  # list of tags to search for in calendar event
 SCOPES = [config["scopes"]]  # api adress to access calendar data
-# EXCEL_LOAD_PATH = config["excel_load_path"]
-# def schleifer_for(ws2,day):
-#     d = 0
-#     for day, tags in vor_pro.items():
-#         if tags["vor"] and not tags["pro"]:
-#             d += 1
-#             excel_setter_homeoffice_p(ws2,datum=day, d=d)
-#             #print(day, "nur #vor")
-#     return d
+
 def excel_homeoffice_setter(ws2,day):
     d = 0
     for day, tags in vor_pro.items():
@@ -164,7 +156,7 @@ else:
             if "#pro" in summary or "#Pro" in summary: # wenn #pro in der Überschrift ist, dann addiere die Stunden zu den Unterrichtsstunden
                 hours_teaching += hours
             """--------------------------------------------"""
-            print(hours_prepared, hours_teaching)
+            #print(hours_prepared, hours_teaching)
             minutes = total_minutes % 60
             month = datetime.now().strftime("%B")
             #month = datetime(2026,3,1).strftime("%B")
@@ -189,13 +181,14 @@ now = datetime.now().strftime("%Y-%m-%d")
 """wenn ordner existiert und datei existiert, lese die datei aus. wenn nichts in der datei steht erstelle eine Rechnung
 wenn deine nummer existiert. lösche die rechnung und erstelle dann eine neue rechnung
 """
-def delete_invoice_if_exists_and_create_new():
+def delete_invoice_if_exists():
     if (path_resolver.output_dir / "last_invoice_ID.txt").exists():
         with open(path_resolver.output_dir / "last_invoice_ID.txt", "r") as f:
             content = f.read()
-            print(content)
         if content:
             FastBill_invoice_creator_instance.delete_invoice(content)
+
+def create_new():
     responded_invoice_id = FastBill_invoice_creator_instance.create_invoice(start_date=First_day_adjusted,
                                                                     end_date=Last_day_adjusted,
                                                                     current_date=now,
@@ -204,13 +197,7 @@ def delete_invoice_if_exists_and_create_new():
     with open(path_resolver.output_dir / "last_invoice_ID.txt", "w") as f:
         f.write(str(responded_invoice_id))
 
-delete_invoice_if_exists_and_create_new()
-
-  # Warte 5 Sekunden, um sicherzustellen, dass die Rechnung erstellt wurde, bevor du versuchst, sie zu löschen
-                                                      
-#print(create_response)
-    #excel_homeoffice_setter(ws2, start_date)
-    #wb2.save(path_resolver.output_dir / f"Homeoffice_zaehler.xlsx")
-  
-    #print("Anzahl Vorbereitungstage:", d)        
-#print(d)
+delete_invoice_if_exists()
+create_new()
+excel_homeoffice_setter(ws2, start_date)
+wb2.save(path_resolver.output_dir / f"Homeoffice_zaehler.xlsx") 
