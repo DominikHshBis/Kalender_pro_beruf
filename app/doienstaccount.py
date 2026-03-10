@@ -108,7 +108,7 @@ events = events_result.get("items", [])
 if not events:
     print("Keine Termine in diesem Monat.")
 else:
-    i = 32
+    i = 0
   
     for event in events:
            
@@ -118,8 +118,13 @@ else:
         summary = event.get("summary", "(kein Titel)",)
         daylie_date = start[:10]
         
-        #print(daylie_date)
         description = event.get("description", "")
+        start_dt = parser.parse(start) 
+        end_dt = parser.parse(end) # Datum und Uhrzeit getrennt formatieren
+        start_date = start_dt.strftime("%d.%m.%Y") 
+            # wenn der startwert für die Excel 32 ist dann setze das Firstdate (der Tag an dem das erste mal ein Termin oder die Vorbereitung stattfindet)
+        if i == 0:
+            First_day = start_date
         
         # wenn einer der Tags in den Überschriften ist, dann führe das untere aus
         if any(tag in summary for tag in TAGS):
@@ -132,12 +137,7 @@ else:
             if ("#pro" in summary or "#Pro" in summary):
                 vor_pro[daylie_date]["pro"] = True
 
-            start_dt = parser.parse(start) 
-            end_dt = parser.parse(end) # Datum und Uhrzeit getrennt formatieren
-            start_date = start_dt.strftime("%d.%m.%Y") 
-            # wenn der startwert für die Excel 32 ist dann setze das Firstdate (der Tag an dem das erste mal ein Termin oder die Vorbereitung stattfindet)
-            if i == 32:
-                First_day = start_date
+            
             # passe immer das Lastday an das start_date an, somit wird der letzte Tag durchgehen ermittelt     
             Last_day = start_date 
             start_time = start_dt.strftime("%H:%M") 
@@ -150,7 +150,7 @@ else:
             total_minutes = int(dif.total_seconds() // 60) 
             hours = total_minutes // 60
         
-            """---------------------nochmalüberarbeiten"""
+            """---------------------nochmal überarbeiten"""
             if "#vor" in summary or "#Vor" in summary: # wenn #vor in der Überschrift ist, dann addiere die Stunden zu den Vorbereitungstunden
                 hours_prepared += 1
             if "#pro" in summary or "#Pro" in summary: # wenn #pro in der Überschrift ist, dann addiere die Stunden zu den Unterrichtsstunden
@@ -163,12 +163,10 @@ else:
             #print(f"{decimal_hours} Stunden")
             
           
-            excel_setter(i,ws, datum=start_date, decimal_hours=decimal_hours, description=description,First_day=First_day, Last_day=Last_day) 
-            
+            excel_setter(i+32,ws, datum=start_date, decimal_hours=decimal_hours, description=description,First_day=First_day, Last_day=Last_day) 
             wb.save(path_resolver.output_dir / f"Muster_Honorarrechnung-Lehrkräfte_{month}.xlsx")
-            
-            
             i += 1
+
 """muss nochmal angepasst werden-------------------------------"""
 Last_day = datetime.strptime(Last_day, "%d.%m.%Y")
 Last_day_adjusted = Last_day.strftime("%Y-%m-%d")
@@ -187,7 +185,7 @@ def delete_invoice_if_exists():
             content = f.read()
         if content:
             FastBill_invoice_creator_instance.delete_invoice(content)
-
+    """logging hier einfügen"""
 def create_new():
     responded_invoice_id = FastBill_invoice_creator_instance.create_invoice(start_date=First_day_adjusted,
                                                                     end_date=Last_day_adjusted,
@@ -196,8 +194,9 @@ def create_new():
                                                                     quantity_teaching=hours_teaching)
     with open(path_resolver.output_dir / "last_invoice_ID.txt", "w") as f:
         f.write(str(responded_invoice_id))
+    """logging hier einfügen"""
 
-delete_invoice_if_exists()
-create_new()
+#delete_invoice_if_exists()
+#create_new()
 excel_homeoffice_setter(ws2, start_date)
 wb2.save(path_resolver.output_dir / f"Homeoffice_zaehler.xlsx") 
