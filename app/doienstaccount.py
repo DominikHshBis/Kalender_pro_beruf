@@ -196,7 +196,7 @@ def create_new():
         f.write(str(responded_invoice_id))
     """logging hier einfügen"""
 
-#delete_invoice_if_exists()
-#create_new()
+delete_invoice_if_exists()
+create_new()
 excel_homeoffice_setter(ws2, start_date)
 wb2.save(path_resolver.output_dir / f"Homeoffice_zaehler.xlsx") 
