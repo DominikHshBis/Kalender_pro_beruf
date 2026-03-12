@@ -100,7 +100,7 @@ events_result = service.events().list(
     orderBy="startTime",
     timeZone = "Europe/Berlin"
 ).execute()
-
+#das ist neu
 # gibt die Termine zurück, die im aktuellen Monat liegen als Liste von Ereignissen zurück. Jedes Ereignis enthält Informationen wie Start- und Endzeit, Titel, Beschreibung usw.
 # wenn in der Liste der Ereignisse keine Termine gefunden werden, wird eine Nachricht ausgegeben, dass keine Termine in diesem Monat vorhanden sind. Andernfalls wird für jedes Ereignis in der Liste eine Schleife durchlaufen, um die relevanten Informationen zu extrahieren und in die Excel-Datei einzutragen.
 
