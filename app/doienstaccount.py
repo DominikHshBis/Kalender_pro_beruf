@@ -133,7 +133,8 @@ else:
         
         # wenn einer der Tags in den Überschriften ist, dann führe das untere aus
         if any(tag in summary for tag in TAGS):
-                            
+            
+            """---------------------nochmal überarbeiten"""                   
             if daylie_date not in vor_pro:
                 vor_pro[daylie_date] = {"vor": False, "pro": False} 
             if ("#vor" in summary or "#Vor" in summary):
@@ -141,7 +142,7 @@ else:
                        
             if ("#pro" in summary or "#Pro" in summary):
                 vor_pro[daylie_date]["pro"] = True
-
+            """---------------------nochmal überarbeiten"""
             
             # passe immer das Lastday an das start_date an, somit wird der letzte Tag durchgehen ermittelt     
             Last_day = start_date 
