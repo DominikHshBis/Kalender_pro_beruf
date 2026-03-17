@@ -7,7 +7,7 @@ services:
     restart: "no"
 
     env_file:
-      - .env.dev
+      - .env
     user: "1000:1000"
 
     volumes:

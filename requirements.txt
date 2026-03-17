@@ -10,5 +10,6 @@ Pillow
 requests
 
 python-dotenv
+Sphinx
 
 

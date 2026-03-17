@@ -16,7 +16,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Restliche Dateien kopieren
 COPY app /app/
-COPY .env.prod /app/.env
 # Standard-Startbefehl (wird durch Cron überschrieben)
 #CMD ["sh", "-c", "python3 doienstaccount.py && tail -f /dev/null"]
 CMD ["python3", "doienstaccount.py"]

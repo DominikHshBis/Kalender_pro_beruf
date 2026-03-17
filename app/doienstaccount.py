@@ -12,19 +12,23 @@ from dotenv import load_dotenv
 import os
 import time
 from Invoice_creater import FastBill_invoice_creator
-from path_resolver import PathResolver  # Neu: Import der PathResolver-Klasse
 
 load_dotenv()
-vor_pro = dict()
-# Neu: PathResolver initialisieren
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-path_resolver = PathResolver(PROJECT_ROOT)
 
-with open(path_resolver.config_path) as f:
+vor_pro = dict()
+CONFIG_PATH = os.getenv("CONFIG_PATH")
+FASTBILL_CONFIG_PATH = os.getenv("FASTBILL_CONFIG_PATH")
+SERVICE_ACCOUNT_FILE = os.getenv("SERVICE_ACCOUNT_FILE")
+EXCEL_LOAD_PATH = os.getenv("EXCEL_LOAD_PATH")
+EXCEL_LOAD_PATH_HO = os.getenv("EXCEL_LOAD_PATH_HO")
+OUTPUT_DIR = Path(os.getenv("OUTPUT_DIR", "output"))
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+with open(CONFIG_PATH) as f:
     config = json.load(f)
 
-FastBill_invoice_creator_instance = FastBill_invoice_creator(project_root=path_resolver.fastbill_config)
-
+FastBill_invoice_creator_instance = FastBill_invoice_creator(project_root=FASTBILL_CONFIG_PATH)
+#am ende ist heute ein schlechter tag Mhm. 
 
 CALENDAR_ID = config["calendar_id"]
 TAGS = config["tags"]  # list of tags to search for in calendar event
@@ -37,13 +41,14 @@ def excel_homeoffice_setter(ws2,day):
             d += 1
             excel_setter_homeoffice_p(ws2,datum=day, d=d)
 
-def vor_counter(searchtag, not_searchtag):
+def vor_counter(searchtag, not_searchtag): 
     d = 0
     for day,tags in vor_pro.items():
        # print(tags)
         if tags[searchtag] and not tags[not_searchtag]:
             d += 1
     return d
+
 def pro_counter(searchtag):
     d = 0
     for day,tags in vor_pro.items():
@@ -55,14 +60,14 @@ def pro_counter(searchtag):
             #print(day, "nur #vor")edentials möglichst früh initialisieren, direkt nach SCOPES
 # laden der credentials aus der json datei und Berechtigungen für API
 credentials = service_account.Credentials.from_service_account_file(
-    path_resolver.service_account_file, scopes=SCOPES
+    SERVICE_ACCOUNT_FILE, scopes=SCOPES
 )
 # erstellt einen Dienst, um mit der Google Calendar API zu kommunizieren
 service = build("calendar", "v3", credentials=credentials)
 
 # excel laden und weitere Variablen
-wb = load_workbook(path_resolver.excel_load_path)
-wb2 = load_workbook(path_resolver.excel_load_path_ho)  # excel laden
+wb = load_workbook(EXCEL_LOAD_PATH)
+wb2 = load_workbook(EXCEL_LOAD_PATH_HO)  # excel laden
 ws = wb.active  # excel aktiv schalten
 ws2 = wb2.active  # excel2 aktiv schalten
 First_day = ""
@@ -164,7 +169,7 @@ else:
             
           
             excel_setter(i+32,ws, datum=start_date, decimal_hours=decimal_hours, description=description,First_day=First_day, Last_day=Last_day) 
-            wb.save(path_resolver.output_dir / f"Muster_Honorarrechnung-Lehrkräfte_{month}.xlsx")
+            wb.save(OUTPUT_DIR / f"Muster_Honorarrechnung-Lehrkräfte_{month}.xlsx")
             i += 1
 
 """muss nochmal angepasst werden-------------------------------"""
@@ -180,8 +185,8 @@ now = datetime.now().strftime("%Y-%m-%d")
 wenn deine nummer existiert. lösche die rechnung und erstelle dann eine neue rechnung
 """
 def delete_invoice_if_exists():
-    if (path_resolver.output_dir / "last_invoice_ID.txt").exists():
-        with open(path_resolver.output_dir / "last_invoice_ID.txt", "r") as f:
+    if (OUTPUT_DIR / "last_invoice_ID.txt").exists():
+        with open(OUTPUT_DIR / "last_invoice_ID.txt", "r") as f:
             content = f.read()
         if content:
             FastBill_invoice_creator_instance.delete_invoice(content)
@@ -192,11 +197,11 @@ def create_new():
                                                                     current_date=now,
                                                                     quantity_preparing=hours_prepared,
                                                                     quantity_teaching=hours_teaching)
-    with open(path_resolver.output_dir / "last_invoice_ID.txt", "w") as f:
+    with open(OUTPUT_DIR / "last_invoice_ID.txt", "w") as f:
         f.write(str(responded_invoice_id))
     """logging hier einfügen"""
 
 delete_invoice_if_exists()
 create_new()
 excel_homeoffice_setter(ws2, start_date)
-wb2.save(path_resolver.output_dir / f"Homeoffice_zaehler.xlsx") 
+wb2.save(OUTPUT_DIR / f"Homeoffice_zaehler.xlsx") 

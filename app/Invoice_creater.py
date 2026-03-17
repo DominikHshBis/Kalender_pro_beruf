@@ -1,12 +1,13 @@
 import requests
 import json
-from path_resolver import PathResolver
+from pathlib import Path
 from datetime import datetime, time, timedelta
 
 class FastBill_invoice_creator:
-    def __init__(self, project_root: PathResolver):
+    def __init__(self, project_root: Path):
         with open(project_root) as f:
             self.config_data = json.load(f)
+
         self.url = "https://my.fastbill.com/api/1.0/api.php"
         self.headers = {
             "key": self.config_data["Authorization"],
@@ -17,7 +18,7 @@ class FastBill_invoice_creator:
 
     def create_invoice(self, current_date = "2026-03-30", start_date = "2026-03-01", end_date = "2026-03-31", quantity_preparing = 1, quantity_teaching = 1) -> int: 
         """Erstellt eine Rechnung bei FastBill und gibt die Rechnungs-ID zurück., leider noch nicht fertig da stunden noch anhand der tage errechnet werden und nicht nach kalender API"""
-        print(start_date, end_date, quantity_preparing, quantity_teaching)
+        #print(start_date, end_date, quantity_preparing, quantity_teaching)
         
         payload = json.dumps({
             "SERVICE": "invoice.create",
@@ -51,7 +52,7 @@ class FastBill_invoice_creator:
         })
         response = requests.post(self.url,auth=(self.config_data["user"], self.config_data["Authorization"]), headers=self.headers, data=payload)
         response_data = response.json()
-        print(response_data)  # Zum Debuggen die vollständige Antwort anzeigen
+        #print(response_data)  # Zum Debuggen die vollständige Antwort anzeigen
         return response_data["RESPONSE"]["INVOICE_ID"]
     
     def delete_invoice(self, invoice_id: int):
