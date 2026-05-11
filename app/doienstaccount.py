@@ -173,36 +173,43 @@ else:
             wb.save(OUTPUT_DIR / f"Muster_Honorarrechnung-Lehrkräfte_{month}.xlsx")
             i += 1
 
-"""muss nochmal angepasst werden-------------------------------"""
-Last_day = datetime.strptime(Last_day, "%d.%m.%Y")
-Last_day_adjusted = Last_day.strftime("%Y-%m-%d")
-First_day = datetime.strptime(First_day, "%d.%m.%Y")
-First_day_adjusted = First_day.strftime("%Y-%m-%d") 
-now = datetime.now().strftime("%Y-%m-%d")
-""""------------------------------------------------------------"""
+class InvoiceCreator():
+    def __init__(self, first_day, last_day, hours_prepared, hours_teaching):
+        self.first_day = first_day
+        self.last_day = last_day
+        self.hours_prepared = hours_prepared
+        self.hours_teaching = hours_teaching
+
+        """muss nochmal angepasst werden-------------------------------"""
+        self.Last_day = datetime.strptime(self.last_day, "%d.%m.%Y")
+        self.Last_day_adjusted = self.Last_day.strftime("%Y-%m-%d")
+        self.First_day = datetime.strptime(self.first_day, "%d.%m.%Y")
+        self.First_day_adjusted = self.First_day.strftime("%Y-%m-%d")
+        self.now = datetime.now().strftime("%Y-%m-%d")
+        """"------------------------------------------------------------"""
 
 
-"""wenn ordner existiert und datei existiert, lese die datei aus. wenn nichts in der datei steht erstelle eine Rechnung
-wenn deine nummer existiert. lösche die rechnung und erstelle dann eine neue rechnung
-"""
-def delete_invoice_if_exists():
-    if (OUTPUT_DIR / "last_invoice_ID.txt").exists():
-        with open(OUTPUT_DIR / "last_invoice_ID.txt", "r") as f:
-            content = f.read()
-        if content:
-            FastBill_invoice_creator_instance.delete_invoice(content)
-    """logging hier einfügen"""
-def create_new():
-    responded_invoice_id = FastBill_invoice_creator_instance.create_invoice(start_date=First_day_adjusted,
-                                                                    end_date=Last_day_adjusted,
-                                                                    current_date=now,
-                                                                    quantity_preparing=hours_prepared,
-                                                                    quantity_teaching=hours_teaching)
-    with open(OUTPUT_DIR / "last_invoice_ID.txt", "w") as f:
-        f.write(str(responded_invoice_id))
-    """logging hier einfügen"""
-
-delete_invoice_if_exists()
-create_new()
+    """wenn ordner existiert und datei existiert, lese die datei aus. wenn nichts in der datei steht erstelle eine Rechnung
+    wenn deine nummer existiert. lösche die rechnung und erstelle dann eine neue rechnung
+    """
+    def delete_invoice_if_exists(self):
+        if (OUTPUT_DIR / "last_invoice_ID.txt").exists():
+            with open(OUTPUT_DIR / "last_invoice_ID.txt", "r") as f:
+                content = f.read()
+            if content:
+                FastBill_invoice_creator_instance.delete_invoice(content)
+        """logging hier einfügen"""
+    def create_new(self):
+        responded_invoice_id = FastBill_invoice_creator_instance.create_invoice(start_date=self.First_day_adjusted,
+                                                                        end_date=self.Last_day_adjusted,
+                                                                        current_date=self.now,
+                                                                        quantity_preparing=self.hours_prepared,
+                                                                        quantity_teaching=self.hours_teaching)
+        with open(OUTPUT_DIR / "last_invoice_ID.txt", "w") as f:
+            f.write(str(responded_invoice_id))
+        """logging hier einfügen"""
+invoice = InvoiceCreator(first_day=First_day, last_day=Last_day, hours_prepared=hours_prepared, hours_teaching=hours_teaching)
+invoice.delete_invoice_if_exists()
+invoice.create_new()
 excel_homeoffice_setter(ws2, start_date)
 wb2.save(OUTPUT_DIR / f"Homeoffice_zaehler.xlsx") 
